@@ -67,7 +67,7 @@ const result = await retry(async (signal) => {
 });
 ```
 
-#### Options
+#### RetryOptions
 
 ```ts
 interface RetryOptions {
@@ -82,7 +82,7 @@ interface RetryOptions {
 }
 ```
 
-### Scheduling
+### RetryContext
 
 ```ts
 interface RetryContext {
