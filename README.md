@@ -139,6 +139,39 @@ const result = await settled([
 ]);
 ```
 
+## Retry
+
+### Options
+
+```ts
+interface RetryOptions {
+  maxRetries?: number;     // Maximum number of retries (default: 10)
+
+  minTimeout?: number;     // Initial delay in ms (default: 1000)
+  maxTimeout?: number;     // Maximum delay in ms (default: Infinity)
+  factor?: number;         // Backoff multiplier (default: 2)
+  jitter?: number;         // Jitter factor (0–1) (default: 0)
+
+  maxTotalTime?: number;   // Maximum total retry time in ms
+
+  retryOnError?: (error: unknown) => boolean;
+  retryOnResult?: (result: unknown) => boolean;
+
+  onRetry?: (context: RetryContext) => void;
+}
+```
+
+### RetryContext
+
+```ts
+interface RetryContext {
+  attempt: number;   // Current attempt (0-based)
+  error?: unknown;   // Present if retry triggered by error
+  result?: unknown;  // Present if retry triggered by result
+  delay: number;     // Next delay in ms
+}
+```
+
 ## Scheduling
 
 ### Limiter
