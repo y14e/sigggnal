@@ -1,5 +1,5 @@
 {
-  "name": "sig8",
+  "name": "sigggnal",
   "version": "0.0.1",
   "description": "High-performance async machinery powered by AbortSignal",
   "type": "module",
@@ -25,20 +25,25 @@
     "lint": "tsc --noEmit"
   },
   "keywords": [
-    "async",
     "abortsignal",
+    "async",
+    "concurrency",
+    "promise",
+    "retry",
+    "scheduler",
+    "timeout",
     "typescript"
   ],
   "author": "Yusuke Kamiyamane",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/y14e/sig8.git"
+    "url": "git+https://github.com/y14e/sigggnal.git"
   },
   "bugs": {
-    "url": "https://github.com/y14e/sig8/issues"
+    "url": "https://github.com/y14e/sigggnal/issues"
   },
-  "homepage": "https://github.com/y14e/sig8#readme",
+  "homepage": "https://github.com/y14e/sigggnal#readme",
   "devDependencies": {
     "bun-types": "latest",
     "tsup": "^8.0.0",
