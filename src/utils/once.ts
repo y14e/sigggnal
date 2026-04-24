@@ -8,6 +8,7 @@ export function once<Args extends unknown[], T>(
       isCalled = true;
       result = await callback(...args);
     }
+
     return result;
   };
 }
