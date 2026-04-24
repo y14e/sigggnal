@@ -1,4 +1,4 @@
-# sigmachine
+# asig
 
 High-performance async machinery powered by `AbortSignal`. Supports cancellation, timeouts, retries, and concurrency control.
 
@@ -15,7 +15,7 @@ High-performance async machinery powered by `AbortSignal`. Supports cancellation
 ## Installation
 
 ```bash
-npm i sigmachine
+npm i asig
 ```
 
 ## Philosophy
@@ -33,7 +33,7 @@ Instead of inventing new abstractions, everything is:
 ### Cancellation
 
 ```ts
-import { sleep } from 'sigmachine';
+import { sleep } from 'asig';
 
 const controller = new AbortController();
 
@@ -45,15 +45,18 @@ await sleep(3000, controller.signal); // throws
 ### Timeout
 
 ```ts
-import { withTimeout } from 'sigmachine';
+import { timeout } from 'asig';
 
-await withTimeout(fetch('/api'), 1000);
+const result = await timeout(1000, async (signal) => {
+  const res = await fetch('/api', { signal });
+  return res.json();
+});
 ```
 
 ### Retry
 
 ```ts
-import { retry } from 'sigmachine';
+import { retry } from 'asig';
 
 const result = await retry(async (signal) => {
   const res = await fetch('/api', { signal });
@@ -69,7 +72,7 @@ const result = await retry(async (signal) => {
 ### `all` (with limit)
 
 ```ts
-import { all } from 'sigmachine';
+import { all } from 'asig';
 
 await all([
   (s) => fetch('/a', { signal: s }),
@@ -80,7 +83,7 @@ await all([
 ### `map`
 
 ```ts
-import { map, sleep } from 'sigmachine';
+import { map, sleep } from 'asig';
 
 const result = await map(
   [1, 2, 3],
@@ -95,7 +98,7 @@ const result = await map(
 ### `race`
 
 ```ts
-import { race } from 'sigmachine';
+import { race } from 'asig';
 
 const result = await race([
   (s) => fetch('/fast', { signal: s }),
@@ -106,7 +109,7 @@ const result = await race([
 ### `any`
 
 ```ts
-import { any } from 'sigmachine';
+import { any } from 'asig';
 
 const result = await any([
   (s) => fetch('/a', { signal: s }),
@@ -119,7 +122,7 @@ const result = await any([
 ### Limiter
 
 ```ts
-import { createLimiter } from 'sigmachine';
+import { createLimiter } from 'asig';
 
 const limit = createLimiter(2);
 
@@ -132,7 +135,7 @@ await Promise.all([
 ### Queue
 
 ```ts
-import { createQueue } from 'sigmachine';
+import { createQueue } from 'asig';
 
 const queue = createQueue({ concurrent: 2 });
 
@@ -147,7 +150,7 @@ await queue.onIdle();
 ### `debounce`
 
 ```ts
-import { debounce } from 'sigmachine';
+import { debounce } from 'asig';
 
 const fn = debounce(300, async (value, signal) => {
   return fetch(`/search?q=${value}`, { signal });
@@ -157,7 +160,7 @@ const fn = debounce(300, async (value, signal) => {
 ### `throttle`
 
 ```ts
-import { throttle } from 'sigmachine';
+import { throttle } from 'asig';
 
 const fn = throttle(1000, async (value, signal) => {
   return fetch(`/data?q=${value}`, { signal });
@@ -167,7 +170,7 @@ const fn = throttle(1000, async (value, signal) => {
 ### `latest`
 
 ```ts
-import { latest } from 'sigmachine';
+import { latest } from 'asig';
 
 const fn = latest(async (value, signal) => {
   return fetch(`/data?q=${value}`, { signal });
@@ -179,7 +182,7 @@ const fn = latest(async (value, signal) => {
 ### Combine signals
 
 ```ts
-import { anySignal } from 'sigmachine';
+import { anySignal } from 'asig';
 
 const combined = anySignal(signalA, signalB);
 ```
@@ -190,7 +193,7 @@ const combined = anySignal(signalA, signalB);
 ### Timeout signal
 
 ```ts
-import { timeoutSignal } from 'sigmachine';
+import { timeoutSignal } from 'asig';
 
 const signal = timeoutSignal(1000);
 ```
@@ -200,7 +203,7 @@ const signal = timeoutSignal(1000);
 ### `sleep`
 
 ```ts
-import { sleep } from 'sigmachine';
+import { sleep } from 'asig';
 
 await sleep(1000);
 ```
@@ -208,7 +211,7 @@ await sleep(1000);
 ### `deferred`
 
 ```ts
-import { deferred } from 'sigmachine';
+import { deferred } from 'asig';
 
 const d = deferred();
 
@@ -220,7 +223,7 @@ await d.promise;
 ### `once`
 
 ```ts
-import { once } from 'sigmachine';
+import { once } from 'asig';
 
 const fn = once(async () => {
   console.log('called once');
@@ -230,7 +233,7 @@ const fn = once(async () => {
 ### `memo`
 
 ```ts
-import { memo } from 'sigmachine';
+import { memo } from 'asig';
 
 const fn = memo((x) => x * 2);
 ```
@@ -244,7 +247,7 @@ const fn = memo((x) => x * 2);
 
 ## Comparison
 
-| Feature        | sigmachine | p-limit | RxJS       |
+| Feature        | asig | p-limit | RxJS       |
 | -------------- | ---------- | ------- | ---------- |
 | AbortSignal    | ✅ Native   | ❌       | ❌ (custom) |
 | Retry          | ✅          | ❌       | ⚠️         |
