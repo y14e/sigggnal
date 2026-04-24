@@ -1,4 +1,4 @@
-import { run } from './run';
+import { run } from './internal';
 
 export const settled = async <T>(
   tasks: ((signal: AbortSignal) => Promise<T>)[],

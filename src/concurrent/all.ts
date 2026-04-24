@@ -1,5 +1,5 @@
 import type { Task } from '../types';
-import { run } from './run';
+import { run } from './internal';
 
 export const all = async <T>(
   tasks: readonly Task<T>[],
