@@ -45,9 +45,9 @@ await sleep(3000, controller.signal); // throws
 ### Timeout
 
 ```ts
-import { withTimeout } from 'sigmachine';
+import { timeout } from 'sigmachine';
 
-await withTimeout(fetch('/api'), 1000);
+await timeout(1000, fetch('/api'));
 ```
 
 ### Retry
