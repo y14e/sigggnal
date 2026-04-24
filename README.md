@@ -47,10 +47,10 @@ await sleep(3000, controller.signal); // throws
 ```ts
 import { timeout } from 'sigmachine';
 
-const result = await timeout(1000, (signal) =>
-  const res = fetch('/api', { signal });
+const result = await timeout(1000, async (signal) => {
+  const res = await fetch('/api', { signal });
   return res.json();
-);
+});
 ```
 
 ### Retry
