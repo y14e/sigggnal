@@ -8,56 +8,46 @@ export const race = <T>(
 ): Promise<T> => {
   return new Promise((resolve, reject) => {
     if (signal?.aborted) {
-      return reject(signal.reason);
+      return reject(abortReason(signal));
     }
+
+    const cleanup = (): void => {
+      signal?.removeEventListener('abort', onAbort);
+    };
 
     let isSettled = false;
     const controllers: AbortController[] = [];
 
-    const onAbort = () => {
+    const settle = (callback: () => void, reason?: unknown): void => {
       if (isSettled) {
         return;
       }
 
       isSettled = true;
       cleanup();
-      const reason = abortReason(signal);
 
-      for (const controller of controllers) {
+      controllers.forEach((controller) => {
         controller.abort(reason);
-      }
-
-      reject(reason);
-    };
-
-    const cleanup = () => {
-      signal?.removeEventListener('abort', onAbort);
-    };
-
-    signal?.addEventListener('abort', onAbort, { once: true });
-
-    const settle = (callback: () => void) => {
-      if (isSettled) {
-        return;
-      }
-
-      isSettled = true;
-      cleanup();
-
-      for (const controller of controllers) {
-        controller.abort();
-      }
+      });
 
       callback();
     };
 
-    for (const task of tasks) {
+    const onAbort = (): void => {
+      const reason = abortReason(signal);
+      settle(() => {
+        reject(reason);
+      }, reason);
+    };
+
+    signal?.addEventListener('abort', onAbort, { once: true });
+
+    tasks.forEach((task) => {
       const controller = new AbortController();
       controllers.push(controller);
       const { signal: own } = controller;
-      const combined = signal ? anySignal(signal, own) : own;
 
-      task(combined)
+      task(signal ? anySignal(signal, own) : own)
         .then((value) => {
           settle(() => {
             resolve(value);
@@ -68,6 +58,6 @@ export const race = <T>(
             reject(reason);
           });
         });
-    }
+    });
   });
 };

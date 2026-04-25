@@ -4,7 +4,6 @@ export const debounce = <T, R>(
 ) => {
   let controller: AbortController | null = null;
   let timer: ReturnType<typeof setTimeout> | undefined;
-
   return (value: T) => {
     controller?.abort();
 

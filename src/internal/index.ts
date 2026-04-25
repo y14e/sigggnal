@@ -12,26 +12,26 @@ export function runWithConcurrency<T>(
   onSettled?: (i: number, r: PromiseSettledResult<T>) => void,
   shouldStop?: () => boolean,
 ): Promise<void> {
+  let isDone = false;
   let index = 0;
   let active = 0;
-  let finished = false;
 
   return new Promise((resolve, reject) => {
     const next = () => {
-      if (finished || shouldStop?.()) {
+      if (isDone || shouldStop?.()) {
         return;
       }
 
       if (index >= tasks.length && active === 0) {
-        finished = true;
+        isDone = true;
         resolve();
         return;
       }
 
       while (active < concurrency && index < tasks.length) {
         const current = index;
-        index += 1;
-        active += 1;
+        index++;
+        active++;
 
         const controller = new AbortController();
         const { signal: own } = controller;
@@ -45,7 +45,7 @@ export function runWithConcurrency<T>(
             onSettled?.(current, { status: 'rejected', reason });
           })
           .finally(() => {
-            active -= 1;
+            active--;
             next();
           });
       }
@@ -54,7 +54,7 @@ export function runWithConcurrency<T>(
     signal?.addEventListener(
       'abort',
       () => {
-        finished = true;
+        isDone = true;
         reject(abortReason(signal));
       },
       { once: true },

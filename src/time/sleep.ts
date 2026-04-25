@@ -7,20 +7,20 @@ export function sleep(timeout: number, signal?: AbortSignal): Promise<void> {
       return;
     }
 
-    const onAbort = () => {
-      cleanup();
-      reject(abortReason(signal));
-    };
-
     let timer: ReturnType<typeof setTimeout> | undefined;
 
-    const cleanup = () => {
+    const cleanup = (): void => {
       if (timer !== undefined) {
         clearTimeout(timer);
         timer = undefined;
       }
 
       signal?.removeEventListener('abort', onAbort);
+    };
+
+    const onAbort = (): void => {
+      cleanup();
+      reject(abortReason(signal));
     };
 
     signal?.addEventListener('abort', onAbort, { once: true });

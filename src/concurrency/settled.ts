@@ -6,8 +6,13 @@ export const settled = async <T>(
   signal?: AbortSignal,
 ): Promise<PromiseSettledResult<T>[]> => {
   const results: PromiseSettledResult<T>[] = new Array(tasks.length);
-  await runWithConcurrency(tasks, concurrency, signal, (i, result) => {
-    results[i] = result;
-  });
+  await runWithConcurrency(
+    tasks,
+    concurrency,
+    signal,
+    (index, result): void => {
+      results[index] = result;
+    },
+  );
   return results;
 };

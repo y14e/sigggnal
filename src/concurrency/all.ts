@@ -13,16 +13,14 @@ export async function all<T>(
     tasks,
     concurrency,
     signal,
-    (i, result) => {
+    (index, result) => {
       if (result.status === 'fulfilled') {
-        results[i] = result.value;
+        results[index] = result.value;
       } else if (firstError === undefined) {
         firstError = result.reason;
       }
     },
-    () => {
-      return firstError !== undefined;
-    },
+    () => firstError !== undefined,
   );
 
   if (firstError !== undefined) {

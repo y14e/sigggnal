@@ -22,32 +22,32 @@ export function anySignal(
     return AbortSignal.any(sources);
   }
 
-  const onAbort = (event: Event) => {
-    cleanup();
-    controller.abort(abortReason(event.currentTarget as AbortSignal));
-  };
+  const { signal: own } = controller;
 
-  const { signal: result } = controller;
-
-  const cleanup = () => {
+  const cleanup = (): void => {
     for (const source of sources) {
       source.removeEventListener('abort', onAbort);
     }
 
-    result.removeEventListener('abort', cleanup);
+    own.removeEventListener('abort', cleanup);
   };
 
-  result.addEventListener('abort', cleanup, { once: true });
+  const onAbort = (event: Event): void => {
+    cleanup();
+    controller.abort(abortReason(event.currentTarget as AbortSignal));
+  };
+
+  own.addEventListener('abort', cleanup, { once: true });
 
   for (const source of sources) {
     if (source.aborted) {
       cleanup();
       controller.abort(abortReason(source));
-      return result;
+      return own;
     }
 
     source.addEventListener('abort', onAbort, { once: true });
   }
 
-  return result;
+  return own;
 }

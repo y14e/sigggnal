@@ -1,9 +1,11 @@
-export const createLimiter = (concurrency: number) => {
-  let count = 0;
+export const createLimiter = (
+  concurrency: number,
+): (<T>(callback: () => Promise<T>) => Promise<T>) => {
+  let attempt = 0;
   const queue: (() => void)[] = [];
 
   const next = () => {
-    if (count >= concurrency) {
+    if (attempt >= concurrency) {
       return;
     }
 
@@ -13,21 +15,20 @@ export const createLimiter = (concurrency: number) => {
       return;
     }
 
-    count++;
+    attempt++;
     job();
   };
 
-  return <T>(callback: () => Promise<T>): Promise<T> =>
+  return (callback) =>
     new Promise((resolve, reject) => {
-      queue[queue.length] = () => {
+      queue[queue.length] = () =>
         callback()
           .then(resolve)
           .catch(reject)
           .finally(() => {
-            count--;
+            attempt--;
             next();
           });
-      };
       next();
     });
 };

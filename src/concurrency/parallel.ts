@@ -8,7 +8,7 @@ export async function parallel<T>(
   const results: T[] = [];
   await runWithConcurrency(tasks, concurrency, signal, (_, result) => {
     if (result.status === 'fulfilled') {
-      results[results.length] = result.value;
+      results.push(result.value);
     }
   });
   return results;

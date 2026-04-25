@@ -1,30 +1,29 @@
 import { createLimiter } from './limiter';
 
-export const createQueue = ({ concurrency = 1 } = {}) => {
+export const createQueue = ({
+  concurrency = 1,
+} = {}): {
+  add<T>(task: () => Promise<T>): Promise<T>;
+  onIdle(): Promise<void>;
+} => {
   let pending = 0;
-  let idleResolvers: (() => void)[] = [];
-
-  const checkIdle = () => {
-    if (pending !== 0 || idleResolvers.length === 0) {
-      return;
-    }
-
-    const resolvers = idleResolvers;
-    idleResolvers = [];
-
-    for (const resolver of resolvers) {
-      resolver();
-    }
-  };
-
   const limiter = createLimiter(concurrency);
-
+  let idleResolvers: (() => void)[] = [];
   return {
-    async add<T>(task: () => Promise<T>) {
+    async add(task) {
       pending++;
-      return limiter(() => Promise.resolve().then(task)).finally(() => {
+      return limiter(async () => task()).finally(() => {
         pending--;
-        checkIdle();
+
+        if (pending > 0 || idleResolvers.length === 0) {
+          return;
+        }
+
+        for (const resolver of idleResolvers) {
+          resolver();
+        }
+
+        idleResolvers = [];
       });
     },
     onIdle() {
@@ -32,8 +31,8 @@ export const createQueue = ({ concurrency = 1 } = {}) => {
         return Promise.resolve();
       }
 
-      return new Promise<void>((resolve) => {
-        idleResolvers[idleResolvers.length] = resolve;
+      return new Promise((resolve) => {
+        idleResolvers.push(resolve);
       });
     },
   };

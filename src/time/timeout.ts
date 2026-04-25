@@ -10,22 +10,22 @@ export async function timeout<T>(
     return Promise.reject(abortReason(signal));
   }
 
-  const controller = new AbortController();
-
-  const onAbort = () => {
-    cleanup();
-    controller.abort(abortReason(signal));
-  };
-
   let timer: ReturnType<typeof setTimeout> | undefined;
 
-  const cleanup = () => {
+  const cleanup = (): void => {
     if (timer !== undefined) {
       clearTimeout(timer);
       timer = undefined;
     }
 
     signal?.removeEventListener('abort', onAbort);
+  };
+
+  const controller = new AbortController();
+
+  const onAbort = (): void => {
+    cleanup();
+    controller.abort(abortReason(signal));
   };
 
   signal?.addEventListener('abort', onAbort, { once: true });
