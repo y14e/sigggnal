@@ -39,9 +39,7 @@ export const any = <T>(
 
     const onAbort = (): void => {
       const reason = abortReason(signal);
-      settle(() => {
-        reject(reason);
-      }, reason);
+      settle(() => reject(reason), reason);
     };
 
     signal?.addEventListener('abort', onAbort, { once: true });
@@ -55,19 +53,15 @@ export const any = <T>(
       const combined = signal ? anySignal(signal, own) : own;
 
       task(combined)
-        .then((value) => {
-          settle(() => {
-            resolve(value);
-          });
-        })
+        .then((value) => settle(() => resolve(value)))
         .catch((reason) => {
           errors.push(reason);
           rejected++;
 
           if (rejected === tasks.length) {
-            settle(() => {
-              reject(new AggregateError(errors, 'All promises were rejected'));
-            });
+            settle(() =>
+              reject(new AggregateError(errors, 'All promises were rejected')),
+            );
           }
         });
     });

@@ -9,10 +9,11 @@ export const settled = async <T>(
   await runWithConcurrency(
     tasks,
     concurrency,
-    signal,
-    (index, result): void => {
+    (index, result) => {
       results[index] = result;
     },
+    undefined,
+    signal,
   );
   return results;
 };

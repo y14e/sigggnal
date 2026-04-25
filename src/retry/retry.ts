@@ -4,8 +4,8 @@ import type { RetryContext, RetryOptions, Task } from '@/types';
 
 export const retry = async <T>(
   callback: Task<T>,
-  signal?: AbortSignal,
   options: RetryOptions = {},
+  signal?: AbortSignal,
 ): Promise<T> => {
   const {
     maxRetries = 10,

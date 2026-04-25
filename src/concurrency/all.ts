@@ -8,11 +8,9 @@ export async function all<T>(
 ): Promise<T[]> {
   const results: T[] = new Array(tasks.length);
   let firstError: unknown | undefined;
-
   await runWithConcurrency(
     tasks,
     concurrency,
-    signal,
     (index, result) => {
       if (result.status === 'fulfilled') {
         results[index] = result.value;
@@ -21,6 +19,7 @@ export async function all<T>(
       }
     },
     () => firstError !== undefined,
+    signal,
   );
 
   if (firstError !== undefined) {

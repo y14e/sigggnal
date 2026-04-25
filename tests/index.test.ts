@@ -85,7 +85,6 @@ describe('sigggnal', () => {
         async () => {
           throw new Error('fail');
         },
-        undefined,
         { maxRetries: 1 },
       ),
     ).rejects.toThrow('fail');

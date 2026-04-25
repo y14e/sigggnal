@@ -35,9 +35,7 @@ export const race = <T>(
 
     const onAbort = (): void => {
       const reason = abortReason(signal);
-      settle(() => {
-        reject(reason);
-      }, reason);
+      settle(() => reject(reason), reason);
     };
 
     signal?.addEventListener('abort', onAbort, { once: true });
@@ -48,16 +46,8 @@ export const race = <T>(
       const { signal: own } = controller;
 
       task(signal ? anySignal(signal, own) : own)
-        .then((value) => {
-          settle(() => {
-            resolve(value);
-          });
-        })
-        .catch((reason) => {
-          settle(() => {
-            reject(reason);
-          });
-        });
+        .then((value) => settle(() => resolve(value)))
+        .catch((reason) => settle(() => reject(reason)));
     });
   });
 };

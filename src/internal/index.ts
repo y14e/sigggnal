@@ -8,9 +8,9 @@ export function abortReason(signal?: AbortSignal): unknown {
 export function runWithConcurrency<T>(
   tasks: readonly Task<T>[],
   concurrency: number,
-  signal?: AbortSignal,
   onSettled?: (i: number, r: PromiseSettledResult<T>) => void,
   shouldStop?: () => boolean,
+  signal?: AbortSignal,
 ): Promise<void> {
   let isDone = false;
   let index = 0;

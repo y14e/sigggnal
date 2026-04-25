@@ -1,6 +1,6 @@
 {
   "name": "sigggnal",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "High-performance async machinery powered by AbortSignal",
   "type": "module",
   "main": "./dist/index.cjs",
@@ -27,11 +27,17 @@
   "keywords": [
     "abortsignal",
     "async",
+    "await",
+    "batch",
     "concurrency",
+    "debounce",
+    "limit",
     "promise",
+    "queue",
     "retry",
     "scheduler",
     "timeout",
+    "throttle",
     "typescript"
   ],
   "author": "Yusuke Kamiyamane",

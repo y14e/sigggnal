@@ -31,9 +31,7 @@ export const createQueue = ({
         return Promise.resolve();
       }
 
-      return new Promise((resolve) => {
-        idleResolvers.push(resolve);
-      });
+      return new Promise((resolve) => idleResolvers.push(resolve));
     },
   };
 };
