@@ -30,7 +30,7 @@ import { all } from 'sigggnal';
 await all([
   (s) => fetch('/a', { signal: s }),
   (s) => fetch('/b', { signal: s }),
-], 2);
+], 2, signal);
 ```
 
 #### `map`
@@ -44,7 +44,8 @@ const result = await map(
   async (value, signal) => {
     await sleep(1000, signal);
     return value * 2;
-  }
+  },
+  signal
 );
 ```
 
@@ -86,11 +87,11 @@ interface RetryOptions {
 
 ```ts
 interface RetryContext {
-  attempt: number;  // Current attempt (0-based)
-  error?: unknown;  // Error from previous attempt
-  result?: unknown; // Result if retry triggered by result
-  elapsedTime: number;  // Total elapsed time in ms
-  delay: number;    // Next delay in ms
+  attempt: number;     // Current attempt (0-based)
+  error?: unknown;     // Error from previous attempt
+  result?: unknown;    // Result if retry triggered by result
+  elapsedTime: number; // Total elapsed time in ms
+  delay: number;       // Next delay in ms
 }
 ```
 
@@ -250,18 +251,34 @@ const combined = anySignal(signalA, signalB);
 ```ts
 import { timeoutSignal } from 'sigggnal';
 
-const signal = timeoutSignal(1000);
+const controller = new AbortController();
+
+await timeoutSignal(1000, controller.signal);
 ```
 
-### Utils
+### Time
 
 #### `sleep` (`wait`)
 
 ```ts
 import { sleep } from 'sigggnal';
 
-await sleep(1000);
+const controller = new AbortController();
+
+await sleep(1000, controller.signal);
 ```
+
+#### `timeout`
+
+```ts
+import { timeout } from 'sigggnal';
+
+const controller = new AbortController();
+
+await timeout(1000, fn, signal);
+```
+
+### Utils
 
 #### `deferred`
 
