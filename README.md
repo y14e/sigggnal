@@ -14,7 +14,7 @@ High-performance async machinery powered by `AbortSignal`. Supports cancellation
 
 ## Built Around AbortSignal
 
-This library is designed from the ground up with AbortSignal as a first-class primitive—not an afterthought.
+This library is designed from the ground up with AbortSignal as a first-class primitive — not an afterthought.
 
 Instead of inventing custom cancellation APIs, everything composes naturally around the standard Web API. Every async operation accepts a signal, propagates it downstream, and reacts to it immediately.
 
