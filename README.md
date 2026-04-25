@@ -89,7 +89,7 @@ interface RetryContext {
   attempt: number;  // Current attempt (0-based)
   error?: unknown;  // Error from previous attempt
   result?: unknown; // Result if retry triggered by result
-  elapsed: number;  // Total elapsed time in ms
+  elapsedTime: number;  // Total elapsed time in ms
   delay: number;    // Next delay in ms
 }
 ```
@@ -132,7 +132,7 @@ await retry(async () => {
 
 ```ts
 await retry(fn, undefined, {
-  shouldStop: ({ elapsed }) => elapsed > 10_000,
+  shouldStop: ({ elapsedTime }) => elapsedTime > 10000,
 });
 ```
 
@@ -149,9 +149,9 @@ await retry(fn, undefined, {
 
 ```ts
 await retry(fn, undefined, {
-  shouldStop: ({ attempt, elapsed, error }) => {
+  shouldStop: ({ attempt, elapsedTime, error }) => {
     if (attempt >= 5) return true;
-    if (elapsed > 10_000) return true;
+    if (elapsedTime > 10000) return true;
 
     if (error instanceof Error) {
       if (error.message.includes('fatal')) return true;
