@@ -101,7 +101,7 @@ interface RetryOptions {
   backoffMultiplier?: number; // Backoff multiplier (default: 2)
   jitterFactor?: number;      // Jitter factor (0–1) (default: 0)
   shouldStop?: (context: RetryContext) => boolean;
-  retryOnResult?: (result: unknown) => boolean;
+  shouldRetryResult?: (result: unknown) => boolean;
   onRetry?: (context: RetryContext) => void;
 }
 ```
@@ -111,6 +111,7 @@ interface RetryOptions {
 ```ts
 interface RetryContext {
   attempt: number;     // Current attempt (0-based)
+  status: string;      // 'fulfilled' or 'rejected'
   error?: unknown;     // Error from previous attempt
   result?: unknown;    // Result if retry triggered by result
   elapsedTime: number; // Total elapsed time in ms
