@@ -52,11 +52,13 @@ export function memo<T extends unknown[], R>(
       const current = node;
       const p = callback(...args);
       current.promise = p;
+
       p.catch(() => {
         if (current.promise === p) {
           delete current.promise;
         }
       });
+
       return p;
     }
 

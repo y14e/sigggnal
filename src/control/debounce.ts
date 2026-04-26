@@ -4,6 +4,7 @@ export const debounce = <T, R>(
 ) => {
   let controller: AbortController | null = null;
   let timer: ReturnType<typeof setTimeout> | undefined;
+
   return (value: T) => {
     controller?.abort();
 
@@ -13,6 +14,7 @@ export const debounce = <T, R>(
     }
 
     controller = new AbortController();
+
     return new Promise<R>((resolve, reject) => {
       timer = setTimeout(() => {
         callback(value, controller?.signal as AbortSignal).then(

@@ -25,9 +25,9 @@ export function anySignal(
   const { signal: own } = controller;
 
   const cleanup = () => {
-    for (const source of sources) {
+    sources.forEach((source) => {
       source.removeEventListener('abort', onAbort);
-    }
+    });
 
     own.removeEventListener('abort', cleanup);
   };

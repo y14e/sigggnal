@@ -9,9 +9,11 @@ export const createQueue = ({
   let pending = 0;
   const limiter = createLimiter(concurrency);
   let idleResolvers: (() => void)[] = [];
+
   return {
     async add(task) {
       pending++;
+
       return limiter(task).finally(() => {
         pending--;
 
@@ -19,9 +21,9 @@ export const createQueue = ({
           return;
         }
 
-        for (const resolver of idleResolvers) {
+        idleResolvers.forEach((resolver) => {
           resolver();
-        }
+        });
 
         idleResolvers = [];
       });

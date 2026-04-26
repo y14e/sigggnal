@@ -28,8 +28,7 @@ export const retry = async <T>(
     shouldStop,
     onRetry,
   } = options;
-
-  const start = Date.now();
+  const startTime = Date.now();
   let lastError: unknown;
 
   for (let attempt = 0; attempt <= maxRetries; attempt++) {
@@ -41,8 +40,14 @@ export const retry = async <T>(
     const combined = signal
       ? anySignal(signal, controller.signal)
       : controller.signal;
-
     let context: RetryContext<T>;
+    const elapsedTime = Date.now() - startTime;
+    const base = Math.min(
+      initialDelay * backoffMultiplier ** attempt,
+      maxDelay,
+    );
+    const delay =
+      jitterFactor > 0 ? base * (1 + Math.random() * jitterFactor) : base;
 
     try {
       const result = await callback(combined);
@@ -51,48 +56,12 @@ export const retry = async <T>(
         return result;
       }
 
-      const elapsedTime = Date.now() - start;
-
-      const base = Math.min(
-        initialDelay * backoffMultiplier ** attempt,
-        maxDelay,
-      );
-
-      const delay =
-        jitterFactor > 0 ? base * (1 + Math.random() * jitterFactor) : base;
-
-      context = {
-        attempt,
-        status: 'fulfilled',
-        result,
-        elapsedTime,
-        delay,
-      };
-
+      context = { attempt, delay, elapsedTime, result, status: 'fulfilled' };
       lastError = result instanceof Error ? result : new Error(String(result));
-
       controller.abort(lastError);
     } catch (error) {
-      const elapsedTime = Date.now() - start;
-
-      const base = Math.min(
-        initialDelay * backoffMultiplier ** attempt,
-        maxDelay,
-      );
-
-      const delay =
-        jitterFactor > 0 ? base * (1 + Math.random() * jitterFactor) : base;
-
-      context = {
-        attempt,
-        status: 'rejected',
-        error,
-        elapsedTime,
-        delay,
-      };
-
+      context = { attempt, delay, elapsedTime, error, status: 'rejected' };
       lastError = error;
-
       controller.abort(error);
     }
 
@@ -100,6 +69,7 @@ export const retry = async <T>(
       if (context.status === 'rejected') {
         throw context.error;
       }
+
       throw lastError ?? new Error('Retry failed');
     }
 

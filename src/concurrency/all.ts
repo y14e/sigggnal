@@ -8,6 +8,7 @@ export async function all<T>(
 ): Promise<T[]> {
   const results: T[] = new Array(tasks.length);
   let firstError: unknown | undefined;
+
   await runWithConcurrency(
     tasks,
     concurrency,

@@ -6,6 +6,7 @@ export async function parallel<T>(
   signal?: AbortSignal,
 ): Promise<T[]> {
   const results: T[] = [];
+
   await runWithConcurrency(
     tasks,
     concurrency,
@@ -17,5 +18,6 @@ export async function parallel<T>(
     undefined,
     signal,
   );
+
   return results;
 }

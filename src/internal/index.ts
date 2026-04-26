@@ -32,7 +32,6 @@ export function runWithConcurrency<T>(
         const current = index;
         index++;
         active++;
-
         const controller = new AbortController();
         const { signal: own } = controller;
         const combined = signal ? anySignal(signal, own) : own;

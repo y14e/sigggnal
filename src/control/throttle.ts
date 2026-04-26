@@ -25,7 +25,6 @@ export function throttle<T, R>(
   return (value: T): Promise<R | undefined> => {
     const now = Date.now();
     const remaining = delay - (now - lastTime);
-
     lastArgs = value;
 
     if (remaining <= 0) {
