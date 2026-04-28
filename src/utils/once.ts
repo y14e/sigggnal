@@ -1,20 +1,20 @@
 export function once<T extends unknown[], R>(
-  callback: (...args: T) => Promise<R>,
+  callback: (...args: T) => R | Promise<R>,
 ): (...args: T) => Promise<R> {
-  let promise: Promise<R> | undefined;
+  let pendingPromise: Promise<R> | undefined;
 
   return (...args: T): Promise<R> => {
-    if (promise === undefined) {
-      const p = callback(...args);
-      promise = p;
+    if (pendingPromise === undefined) {
+      const nextPromise = Promise.resolve().then(() => callback(...args));
+      pendingPromise = nextPromise;
 
-      p.catch(() => {
-        if (promise === p) {
-          promise = undefined;
+      nextPromise.catch(() => {
+        if (pendingPromise === nextPromise) {
+          pendingPromise = undefined;
         }
       });
     }
 
-    return promise;
+    return pendingPromise;
   };
 }

@@ -1,6 +1,6 @@
 {
   "name": "sigggnal",
-  "version": "0.0.10",
+  "version": "0.1.0",
   "description": "High-performance async machinery powered by AbortSignal",
   "type": "module",
   "main": "./dist/index.cjs",
