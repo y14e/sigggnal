@@ -53,12 +53,13 @@ npm i sigggnal
 
 ---
 
-<a id="concurrency"></a>**Concurrency** /
-[all](#all),
-[any](#any),
-[map](#map),
-[parallel](#parallel),
-[race](#race),
+<a id="concurrency"></a>**Concurrency**
+
+[all](#all) ·
+[any](#any) ·
+[map](#map) ·
+[parallel](#parallel) ·
+[race](#race) ·
 [settled](#settled)
 
 ```ts
@@ -144,9 +145,10 @@ settled(tasks, concurrency, signal);
 
 ---
 
-<a id="control"></a>**Control** /
-[debounce](#debounce),
-[latest](#latest),
+<a id="control"></a>**Control**
+
+[debounce](#debounce) ·
+[latest](#latest) ·
 [throttle](#throttle)
 
 ```ts
@@ -316,8 +318,9 @@ await retry(fn, {
 
 ---
 
-<a id="scheduler"></a>**Scheduler** /
-[Limiter](#limiter),
+<a id="scheduler"></a>**Scheduler**
+
+[Limiter](#limiter) ·
 [Queue](#queue)
 
 ```ts
@@ -348,10 +351,11 @@ await queue.onIdle();
 
 ---
 
-<a id="signal"></a>**Signal** /
-[abortable](#abortable),
-[anySignal](#anysignal),
-[timeoutSignal](#timeoutsignal),
+<a id="signal"></a>**Signal**
+
+[abortable](#abortable) ·
+[anySignal](#anysignal) ·
+[timeoutSignal](#timeoutsignal) ·
 [withSignal](#withsignal)
 
 ```ts
@@ -406,8 +410,9 @@ withSignal(fn);
 
 ---
 
-<a id="time"></a>**Time** /
-[sleep (wait)](#sleep-wait),
+<a id="time"></a>**Time**
+
+[sleep (wait)](#sleep-wait) ·
 [timeout](#timeout)
 
 ```ts
@@ -440,9 +445,10 @@ timeout(timeout, fn, signal);
 
 ---
 
-<a id="utils"></a>**Utils** /
-[deferred](#deferred),
-[memo](#memo),
+<a id="utils"></a>**Utils**
+
+[deferred](#deferred) ·
+[memo](#memo) ·
 [once](#once)
 
 ```ts
