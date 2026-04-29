@@ -53,96 +53,121 @@ npm i sigggnal
 
 ---
 
-### Concurrency
-
-[all](#all) /
-[any](#any) /
-[map](#map) /
-[parallel](#parallel) /
-[race](#race) /
+<a id="concurrency"></a>**Concurrency** /
+[all](#all),
+[any](#any),
+[map](#map),
+[parallel](#parallel),
+[race](#race),
 [settled](#settled)
 
 ```ts
-import { all, any, map, parallel, race, setttled } from 'sigggnal';
+import { all, any, map, parallel, race, settled } from 'sigggnal';
 ```
 
-#### all
+### all
+
+Runs tasks with limited concurrency. Resolves when all tasks succeed, or rejects on the first error.
 
 ```ts
-all(tasks, 3, signal);
+all(tasks, concurrency, signal?);
 // => Promise<T[]>
 //
-// tasks: (signal) => Promise<T>[]
+// tasks: ((signal) => Promise<T>)[]
+// concurrency: number
+// signal: AbortSignal
 ```
 
-#### any
+### any
+
+Resolves with the first fulfilled result. Rejects if all tasks fail.
 
 ```ts
-any(tasks, signal);
+any(tasks, signal?);
 // => Promise<T>
 //
-// tasks: (signal) => Promise<T>[]
+// tasks: ((signal) => Promise<T>)[]
+// signal: AbortSignal
 ```
 
-#### map
+### map
+
+Maps items to async tasks with limited concurrency. Resolves with results in the same order as input.
 
 ```ts
-map(items, 3, fn, signal);
+map(items, concurrency, fn, signal?);
+// => Promise<R[]>
+//
+// items: T[]
+// concurrency: number
+// fn: (item, index, signal) => Promise<R>
+// signal: AbortSignal
+```
+
+### parallel
+
+Runs tasks in parallel with optional concurrency control. Resolves with all fulfilled results (errors are ignored).
+
+```ts
+parallel(tasks, concurrency, signal?);
 // => Promise<T[]>
 //
-// items: []
-// fn: (item, index, signal) => Promise<T>
+// tasks: ((signal) => Promise<T>)[]
+// concurrency: number
+// signal: AbortSignal
 ```
 
-#### parallel
+### race
+
+Resolves or rejects as soon as one task settles. Cancels all remaining tasks.
 
 ```ts
-parallel(tasks, 3, signal);
-// => Promise<T[]>
-//
-// tasks: (signal) => Promise<T>[]
-```
-
-#### race
-
-```ts
-race(tasks, signal);
+race(tasks, signal?);
 // => Promise<T>
 //
-// tasks: (signal) => Promise<T>[]
+// tasks: ((signal) => Promise<T>)[]
+// signal: AbortSignal
 ```
 
-#### settled
+### settled
+
+Runs all tasks and collects their results. Always resolves with the outcome of each task.
 
 ```ts
-settled(tasks, 3, signal);
+settled(tasks, concurrency, signal?);
 // => Promise<T[]>
 //
-// tasks: (signal) => Promise<T>[]
+// tasks: ((signal) => Promise<T>)[]
+// concurrency: number
+// signal: AbortSignal
 ```
 
 ---
 
-### Control
-
-[debounce](#debounce) /
-[latest](#latest) /
+<a id="control"></a>**Control** /
+[debounce](#debounce),
+[latest](#latest),
 [throttle](#throttle)
 
 ```ts
 import { debounce, latest, throttle } from 'sigggnal';
 ```
 
-#### debounce
+### debounce
+
+Debounces async calls. Only the last call is executed; previous pending calls are canceled.
 
 ```ts
-debounce(300, fn);
+debounce(delay, fn);
 // => (value) => Promise<T>
 //
+// delay: number (ms)
 // fn: (value, signal) => Promise<T>
 ```
 
-#### latest
+### latest
+
+Ensures only the latest call is active. Previous calls are canceled when a new one starts.
 
 ```ts
 latest(fn);
@@ -151,12 +176,15 @@ latest(fn);
 // fn: (value, signal) => Promise<T>
 ```
 
-#### throttle
+### throttle
+
+Throttles async calls to run at most once per interval. Supports leading and trailing execution.
 
 ```ts
-throttle(300, fn, { leading: true, trailing: true });
+throttle(delay, fn, { leading: true, trailing: true });
 // => (value) => Promise<T>
 //
+// delay: number (ms)
 // fn: (value, signal) => Promise<T>
 ```
 
@@ -166,20 +194,20 @@ throttle(300, fn, { leading: true, trailing: true });
 
 ```ts
 import { retry } from 'sigggnal';
+```
 
-const result = await retry(async (signal) => {
-  const res = await fetch('/api', { signal });
-  return res.json();
-}, {
-  maxRetries: 5,
-  minTimeout: 500,
-}, signal);
+```ts
+retry(fn, options, signal);
+// => Promise<T>
+//
+// fn: (signal) => Promise<T>
+// options: RetryOptions
 ```
 
 #### RetryOptions
 
 ```ts
-interface RetryOptions {
+{
   maxRetries?: number;        // Safety cap (default: 10)
   initialDelay?: number;      // Initial delay in ms (default: 1000)
   maxDelay?: number;          // Maximum delay in ms (default: Infinity)
@@ -194,7 +222,7 @@ interface RetryOptions {
 #### RetryContext
 
 ```ts
-interface RetryContext {
+{
   attempt: number;     // Current attempt (0-based)
   status: string;      // 'fulfilled' or 'rejected'
   error?: unknown;     // Error from previous attempt
@@ -203,11 +231,6 @@ interface RetryContext {
   delay: number;       // Next delay in ms
 }
 ```
-
-Retry behavior is controlled by `shouldStop(context)`.
-
-* `true` → stop immediately
-* `false` → continue retrying
 
 <details>
 <summary>Retry details</summary>
@@ -288,16 +311,15 @@ await retry(fn, {
 
 ---
 
-### Scheduler
-
-[Limiter](#limiter) /
+<a id="scheduler"></a>**Scheduler** /
+[Limiter](#limiter),
 [Queue](#queue)
 
 ```ts
 import { createLimiter, createQueue } from 'sigggnal';
 ```
 
-#### Limiter
+### Limiter
 
 ```ts
 const limit = createLimiter(2);
@@ -308,7 +330,7 @@ await Promise.all([
 ]);
 ```
 
-#### Queue
+### Queue
 
 ```ts
 const queue = createQueue({ concurrent: 2 });
@@ -321,90 +343,108 @@ await queue.onIdle();
 
 ---
 
-### Signal
-
-[abortable](#abortable) /
-[anySignal](#anysignal) /
-[timeoutSignal](#timeoutsignal) /
+<a id="signal"></a>**Signal** /
+[abortable](#abortable),
+[anySignal](#anysignal),
+[timeoutSignal](#timeoutsignal),
 [withSignal](#withsignal)
 
 ```ts
 import { abortable, anySignal, timeoutSignal, withSignal } from 'sigggnal';
 ```
 
-#### abortable
+### abortable
+
+Wraps a promise to make it abortable. Rejects if the signal is aborted.
 
 ```ts
-abortable(promise, signal);
+abortable(promise, signal?);
 // => Promise<T>
+//
+// promise: Promise<T>
+// signal: AbortSignal
 ```
 
-#### anySignal
+### anySignal
+
+Combines multiple signals into one. Aborts when any of the input signals abort.
 
 ```ts
-anySignal(signal1, signal2, /* ..., */ signalN);
+anySignal(...signals);
 // => AbortSignal
+//
+// ...signals: AbortSignal[]
 ```
 
-#### timeoutSignal
+### timeoutSignal
+
+Creates a signal that aborts after a timeout. Also propagates abort from the parent signal.
 
 ```ts
-timeoutSignal(1000, signal);
+timeoutSignal(timeout, signal?);
 // => AbortSignal
+//
+// timeout: number (ms)
+// signal: AbortSignal
 ```
 
-#### withSignal
+### withSignal
+
+Adapts a function to work with composed signals. Combines parent and internal signals into a single one.
 
 ```ts
-withSignal(fn, signal);
-// => Promise<T>
+withSignal(fn);
+// => (...args) => (parent?) => (internal) => Promise<T>
 //
 // fn: (signal, ...args) => Promise<T>
 ```
 
 ---
 
-### Time
-
-[sleep (wait)](#sleep-wait) /
+<a id="time"></a>**Time** /
+[sleep (wait)](#sleep-wait),
 [timeout](#timeout)
 
 ```ts
 import { sleep, timeout } from 'sigggnal';
 ```
 
-#### sleep (wait)
+### sleep (wait)
 
 ```ts
-sleep(1000, signal);
+sleep(timeout, signal?);
 // => Promise<void>
+//
+// timeout: number (ms)
+// signal: AbortSignal
 
-// alias
+// Alias
 wait(1000, signal);
 ```
 
-#### timeout
+### timeout
 
 ```ts
-timeout(1000, fn, signal);
+timeout(timeout, fn, signal?);
 // => Promise<T>
 //
+// timeout: number (ms)
 // fn: (signal) => Promise<T>
+// signal: AbortSignal
 ```
 
 ---
 
-### Utils
-
-[deferred](#deferred) /
-[memo](#memo) /
+<a id="utils"></a>**Utils** /
+[deferred](#deferred),
+[memo](#memo),
 [once](#once)
 
 ```ts
 import { deferred, memo, once } from 'sigggnal';
 ```
 
-#### deferred
+### deferred
 
 ```ts
 const d = deferred();
@@ -414,13 +454,13 @@ setTimeout(() => d.resolve('done'), 1000);
 await d.promise;
 ```
 
-#### memo
+### memo
 
 ```ts
 const fn = memo((x) => x * 2, { ttl: 5000 });
 ```
 
-#### once
+### once
 
 ```ts
 const fn = once(async () => {
