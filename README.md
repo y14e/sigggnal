@@ -43,16 +43,24 @@ npm i sigggnal
 
 ## Usage
 
-* [Concurrency](#concurrency)
-* [Control](#control)
-* [Retry](#retry)
-* [Scheduler](#scheduler)
-* [Signal](#signal)
-* [Time](#time)
-* [Utils](#utils)
+[Concurrency](#concurrency) /
+[Control](#control) /
+[Retry](#retry) /
+[Scheduler](#scheduler) /
+[Signal](#signal) /
+[Time](#time) /
+[Utils](#utils)
 
+---
 
 ### Concurrency
+
+[all](#all) /
+[any](#any) /
+[map](#map) /
+[parallel](#parallel) /
+[race](#race) /
+[settled](#settled)
 
 ```ts
 import { all, any, map, parallel, race, setttled } from 'sigggnal';
@@ -113,7 +121,13 @@ settled(tasks, 3, signal);
 // tasks: (signal) => Promise<T>[]
 ```
 
+---
+
 ### Control
+
+[debounce](#debounce) /
+[latest](#latest) /
+[throttle](#throttle)
 
 ```ts
 import { debounce, latest, throttle } from 'sigggnal';
@@ -145,6 +159,8 @@ throttle(300, fn, { leading: true, trailing: true });
 //
 // fn: (value, signal) => Promise<T>
 ```
+
+---
 
 ### Retry
 
@@ -270,7 +286,12 @@ await retry(fn, {
 ```
 </details>
 
+---
+
 ### Scheduler
+
+[Limiter](#limiter) /
+[Queue](#queue)
 
 ```ts
 import { createLimiter, createQueue } from 'sigggnal';
@@ -298,7 +319,14 @@ queue.add(() => fetch('/b'));
 await queue.onIdle();
 ```
 
+---
+
 ### Signal
+
+[abortable](#abortable) /
+[anySignal](#anysignal) /
+[timeoutSignal](#timeoutsignal) /
+[withSignal](#withsignal)
 
 ```ts
 import { abortable, anySignal, timeoutSignal, withSignal } from 'sigggnal';
@@ -336,7 +364,12 @@ withSignal(fn, signal);
 // fn: (signal, ...args) => Promise<T>
 ```
 
+---
+
 ### Time
+
+[sleep (wait)](#sleep-wait) /
+[timeout](#timeout)
 
 ```ts
 import { sleep, timeout } from 'sigggnal';
@@ -361,7 +394,13 @@ timeout(1000, fn, signal);
 // fn: (signal) => Promise<T>
 ```
 
+---
+
 ### Utils
+
+[deferred](#deferred) /
+[memo](#memo) /
+[once](#once)
 
 ```ts
 import { deferred, memo, once } from 'sigggnal';
