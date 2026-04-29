@@ -43,6 +43,15 @@ npm i sigggnal
 
 ## Usage
 
+* [Concurrency](#concurrency)
+* [Control](#control)
+* [Retry](#retry)
+* [Scheduler](#scheduler)
+* [Signal](#signal)
+* [Time](#time)
+* [Utils](#utils)
+
+
 ### Concurrency
 
 ```ts
