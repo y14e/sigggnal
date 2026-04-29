@@ -332,9 +332,9 @@ await queue.onIdle();
 ---
 
 <a id="signal"></a>**Signal** /
-[abortable](#abortable) /
-[anySignal](#anysignal) /
-[timeoutSignal](#timeoutsignal) /
+[abortable](#abortable),
+[anySignal](#anysignal),
+[timeoutSignal](#timeoutsignal),
 [withSignal](#withsignal)
 
 ```ts
