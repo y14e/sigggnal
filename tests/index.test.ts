@@ -223,7 +223,7 @@ describe('sigggnal', () => {
   });
 
   test('createQueue: processes tasks', async () => {
-    const queue = createQueue({ concurrent: 1 });
+    const queue = createQueue({ concurrency: 1 });
     const result: number[] = [];
 
     queue.add(async () => result.push(1));
