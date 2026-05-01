@@ -28,6 +28,7 @@ export async function retry<T>(
     shouldStop,
     onRetry,
   } = options;
+
   const startTime = Date.now();
   let lastError: unknown;
 
@@ -40,47 +41,74 @@ export async function retry<T>(
     const combined = signal
       ? anySignal(signal, controller.signal)
       : controller.signal;
-    let context: RetryContext<T>;
+
     const elapsedTime = Date.now() - startTime;
+
     const base = Math.min(
       initialDelay * backoffMultiplier ** attempt,
       maxDelay,
     );
+
     const delay =
       jitterFactor > 0 ? base * (1 + Math.random() * jitterFactor) : base;
+
+    let context: RetryContext<T>;
 
     try {
       const result = await fn(combined);
 
+      // 成功 → retry不要
       if (!shouldRetryResult?.(result)) {
         return result;
       }
 
-      context = { attempt, delay, elapsedTime, result, status: 'fulfilled' };
-      lastError = result instanceof Error ? result : new Error(String(result));
-      controller.abort(lastError);
+      // 成功だけど retry対象
+      context = {
+        attempt,
+        delay,
+        elapsedTime,
+        result,
+        status: 'fulfilled',
+      };
+
+      // result系は error扱いしない
+      lastError = undefined;
     } catch (error) {
-      context = { attempt, delay, elapsedTime, error, status: 'rejected' };
+      context = {
+        attempt,
+        delay,
+        elapsedTime,
+        error,
+        status: 'rejected',
+      };
+
       lastError = error;
+
+      // error時のみ abort伝播
       controller.abort(error);
     }
 
+    // 終了条件
     if (attempt === maxRetries || shouldStop?.(context)) {
       if (context.status === 'rejected') {
         throw context.error;
       }
 
-      throw lastError ?? new Error('Retry failed');
+      // result retry failure
+      throw new Error('Retry failed');
     }
 
+    // フック
     onRetry?.(context);
 
+    // wait
     try {
       await sleep(context.delay, signal);
     } catch {
-      throw signal?.reason ?? lastError;
+      throw signal?.reason ?? lastError ?? new Error('Retry aborted');
     }
   }
 
+  // 通常ここには来ないが安全のため
   throw lastError ?? new Error('Retry failed');
 }

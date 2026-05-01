@@ -87,7 +87,13 @@ export function _runWithConcurrency<T>(
 
   return new Promise((resolve, reject) => {
     const next = () => {
-      if (isDone || shouldStop?.()) {
+      if (isDone) {
+        return;
+      }
+
+      if (shouldStop?.()) {
+        isDone = true;
+        resolve();
         return;
       }
 
